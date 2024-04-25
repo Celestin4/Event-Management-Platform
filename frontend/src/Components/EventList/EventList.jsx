@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
+import { Base_URL } from '../../constants/constants';
 
 const EventList = () => {
   const [events, setEvents] = useState([]);
@@ -9,7 +10,8 @@ const EventList = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get('http://localhost:5000/events/');
+        const response = await axios.get(`${Base_URL}/events`);
+        console.log(response)
         setEvents(response.data);
         setLoading(false);
       } catch (error) {
