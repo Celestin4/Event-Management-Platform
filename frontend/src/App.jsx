@@ -5,6 +5,7 @@ import EventList from './Components/EventList/EventList';
 import UserDashboard from './Components/UserDashboard/UserDashboard';
 import AdminDashboard from './Components/AdminDashboard/AdminDashboard';
 import EventDetails from './Components/EventDetails/EventDetails';
+import MostRecentEventList from './Components/MostRecent/MostRecent';
 import Footer from './Components/Footer/Footer';
 import SignInForm from './Components/Login/Login';
 import SignUpForm from './Components/Signup/Signup';
@@ -24,6 +25,7 @@ const App = () => {
                 <Navbar />
                 <Routes>
                     <Route path="/" element={<EventList />} />
+                    <Route path="/recent" element={<MostRecentEventList />} />
                     <Route path="/events/:eventId" element={<EventDetails />} />
                     <Route path="/mybookings" element={<UserDashboard />} />
                     {isAdmin() ? (

@@ -1,13 +1,15 @@
 const Booking = require('../models/bookingModel');
+const User = require('../models/userModel');
+const jwt = require('jsonwebtoken');
 
 exports.getUserBookings = async (req, res, next) => {
   try {
-    // Assuming userId is obtained from authentication middleware
     const userId = req.userData.userId;
-
-    // Find all bookings associated with the user
-    const bookings = await Booking.find({ userId });
-
+    // Retrieve bookings for the user and populate the associated event fields
+    const bookings = await Booking.find({ userId }).populate({
+      path: 'eventId',
+      select: 'title date location ticketAvailability imageUrl description'
+    });
     res.status(200).json(bookings);
   } catch (err) {
     console.error("Error fetching user bookings:", err);
@@ -15,26 +17,21 @@ exports.getUserBookings = async (req, res, next) => {
   }
 };
 
-
-// Create a new booking
 exports.createBooking = async (req, res, next) => {
   try {
-    const { eventId } = req.params;
     const { tickets } = req.body;
-    
-    // Additional validation
+    const { eventId } = req.params;
+
     if (!eventId || !tickets) {
-      return res.status(400).json({ error: "Event ID and number of tickets are required" });
+      return res.status(400).json({ error: "Event ID and tickets are required" });
     }
 
-    // Create the booking
     const booking = await Booking.create({
       eventId,
-      userId: req.userData.userId, // Assuming userId is obtained from authentication middleware
+      userId: req.userData.userId,
       tickets
     });
-    console.log(booking)
-    
+
     res.status(201).json(booking);
   } catch (err) {
     console.error("Error creating booking:", err);
@@ -42,18 +39,33 @@ exports.createBooking = async (req, res, next) => {
   }
 };
 
-// Delete a booking
-exports.deleteBooking = async (req, res, next) => {
+
+exports.cancelBooking = async (req, res, next) => {
   try {
     const booking = await Booking.findById(req.params.id);
     if (!booking) {
       return res.status(404).json({ error: "Booking not found" });
     }
-
     await Booking.findByIdAndDelete(req.params.id);
     res.status(200).json({ message: "Booking deleted successfully" });
   } catch (err) {
     console.error("Error deleting booking:", err);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
+
+exports.getEventBookings = async (req, res, next) => {
+  try {
+    if (!req.userData || req.userData.userRole !== 'admin') {
+      return res.status(403).json({ error: "Only admins can access this resource" });
+    }
+    const { eventId } = req.params;
+    const bookings = await Booking.find({ eventId });
+    const userIds = bookings.map(booking => booking.userId);
+    const users = await User.find({ _id: { $in: userIds } });
+    res.status(200).json(users);
+  } catch (err) {
+    console.error("Error fetching event bookings:", err);
     res.status(500).json({ error: "Internal server error" });
   }
 };

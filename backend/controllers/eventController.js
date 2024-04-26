@@ -3,12 +3,30 @@ const Event = require('../models/eventModel');
 exports.getAllEvents = async (req, res, next) => {
   try {
     const events = await Event.find();
-    if (!events) {
-      const error = new Error('Events not found');
-      error.statusCode = 404;
-      throw error;
-    }
     res.json(events);
+  } catch (err) {
+    next(err);
+  }
+};
+
+exports.getUpcomingEvents = async (req, res, next) => {
+  try {
+    const currentDate = new Date();
+    const upcomingEvents = await Event.find({ date: { $gte: currentDate } }).sort({ date: 1 });
+    res.json(upcomingEvents);
+  } catch (err) {
+    next(err);
+  }
+};
+
+exports.getMostRecentEvents = async (req, res, next) => {
+  try {
+    const currentDate = new Date();
+    const sevenDaysLater = new Date(currentDate);
+    sevenDaysLater.setDate(currentDate.getDate() + 7);
+
+    const recentEvents = await Event.find({ date: { $gte: currentDate, $lte: sevenDaysLater } }).sort({ date: 1 });
+    res.json(recentEvents);
   } catch (err) {
     next(err);
   }
@@ -16,11 +34,20 @@ exports.getAllEvents = async (req, res, next) => {
 
 exports.getEventById = async (req, res, next) => {
   try {
-    const event = await Event.findById(req.params.id);
+    const eventId = req.params.id;
+
+    if (eventId === "upcoming") {
+      return exports.getUpcomingEvents(req, res, next);
+    }
+
+    if (eventId === "mostRecentEvents") {
+      return exports.getMostRecentEvents(req, res, next);
+    }
+
+
+    const event = await Event.findById(eventId);
     if (!event) {
-      const error = new Error('Event not found');
-      error.statusCode = 404;
-      throw error;
+      return res.status(404).json({ message: 'Event not found' });
     }
     res.json(event);
   } catch (err) {
@@ -44,9 +71,7 @@ exports.updateEvent = async (req, res, next) => {
   try {
     const event = await Event.findByIdAndUpdate(req.params.id, req.body, { new: true });
     if (!event) {
-      const error = new Error('Event not found');
-      error.statusCode = 404;
-      throw error;
+      return res.status(404).json({ message: 'Event not found' });
     }
     res.json(event);
   } catch (err) {
@@ -54,15 +79,14 @@ exports.updateEvent = async (req, res, next) => {
   }
 };
 
-exports.deleteEvent = async (req, res) => {
-
+exports.deleteEvent = async (req, res, next) => {
   try {
     const event = await Event.findByIdAndDelete(req.params.id);
     if (!event) {
-      res.status(404).json({message: 'Event is not found'})
+      return res.status(404).json({ message: 'Event not found' });
     }
-    res.status(201).json({message: 'Event deleted successfly'});
+    res.status(200).json({ message: 'Event deleted successfully' });
   } catch (err) {
-    res.status(500).json({message: 'server error'})
+    next(err);
   }
 };

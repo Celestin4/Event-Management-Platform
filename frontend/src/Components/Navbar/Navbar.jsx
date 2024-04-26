@@ -22,7 +22,7 @@ const Navbar = () => {
         </div>
         <div className="hidden md:flex md:items-center md:justify-end md:space-x-4">
           <Link to="/" className="text-gray-700 hover:text-blue-500">All Events</Link>
-          <Link to="/about" className="text-gray-700 hover:text-blue-500">Most recent</Link>
+          <Link to="/recent" className="text-gray-700 hover:text-blue-500">Most recent</Link>
          
           {isLoggedIn ? (
             <>
