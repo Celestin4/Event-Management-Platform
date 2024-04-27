@@ -4,8 +4,8 @@ import { login, register } from '../Auth/authService';
 // Check for token in local storage during app initialization
 const token = localStorage.getItem('token');
 const initialState = {
-  isAuthenticated: !!token, // Set isAuthenticated based on the presence of the token
-  user: null,
+  isAuthenticated: !!token,
+  user: token,
   status: 'idle',
   error: null
 };
