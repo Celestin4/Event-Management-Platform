@@ -1,5 +1,6 @@
 const Booking = require('../models/bookingModel');
 const User = require('../models/userModel');
+const Event = require('../models/eventModel')
 const jwt = require('jsonwebtoken');
 
 exports.getUserBookings = async (req, res, next) => {
@@ -10,12 +11,28 @@ exports.getUserBookings = async (req, res, next) => {
       path: 'eventId',
       select: 'title date location ticketAvailability imageUrl description'
     });
-    res.status(200).json(bookings);
+    
+    // Handle the case where eventId does not exist
+    const filteredBookings = bookings.map(booking => {
+      if (!booking.eventId) {
+        // Handle the case where eventId does not exist for this booking
+        // You can set a default or customize your handling here
+        return {
+          ...booking.toObject(),
+          event: null // For example, setting event to null
+        };
+      } else {
+        return booking;
+      }
+    });
+
+    res.status(200).json(filteredBookings);
   } catch (err) {
     console.error("Error fetching user bookings:", err);
     res.status(500).json({ error: "Internal server error" });
   }
 };
+
 
 exports.createBooking = async (req, res, next) => {
   try {
@@ -24,6 +41,12 @@ exports.createBooking = async (req, res, next) => {
 
     if (!eventId || !tickets) {
       return res.status(400).json({ error: "Event ID and tickets are required" });
+    }
+
+    // Check if the event exists
+    const event = await Event.findById(eventId);
+    if (!event) {
+      return res.status(404).json({ error: "Event not found" });
     }
 
     const booking = await Booking.create({
@@ -38,6 +61,7 @@ exports.createBooking = async (req, res, next) => {
     res.status(500).json({ error: "Internal server error" });
   }
 };
+
 
 
 exports.cancelBooking = async (req, res, next) => {
@@ -69,3 +93,29 @@ exports.getEventBookings = async (req, res, next) => {
     res.status(500).json({ error: "Internal server error" });
   }
 };
+
+
+exports.viewEventAttendees = async (req, res, next) => {
+  try {
+    if (!req.userData || req.userData.userRole !== 'admin') {
+      return res.status(403).json({ error: "Only admins can access this resource" });
+    }
+
+    const { eventId } = req.params;
+
+    // Find all bookings for the event
+    const bookings = await Booking.find({ eventId });
+
+    // Extract user IDs from bookings
+    const userIds = bookings.map(booking => booking.userId);
+
+    // Find users with the extracted IDs and populate their full names
+    const users = await User.find({ _id: { $in: userIds } }).select('fullName');
+
+    res.status(200).json(users);
+  } catch (err) {
+    console.error("Error fetching event attendees:", err);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
+

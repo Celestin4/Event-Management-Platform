@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import axios from 'axios';
 
@@ -25,10 +25,9 @@ const EventDetails = () => {
   };
 
   const handleSubmitBooking = () => {
-    // Retrieve token from local storage
+
     const token = localStorage.getItem('token');
   
-    // Submit booking using fetch request
     fetch(`http://localhost:5000/booking/${eventId}`, {
       method: 'POST',
       headers: {
@@ -40,12 +39,10 @@ const EventDetails = () => {
       }),
     })
       .then(response => {
-        // Handle response, e.g., show success message
         console.log('Booking successful:', response);
         setIsBookingModalOpen(false);
       })
       .catch(error => {
-        // Handle error, e.g., show error message
         console.error('Error booking:', error);
       });
   };

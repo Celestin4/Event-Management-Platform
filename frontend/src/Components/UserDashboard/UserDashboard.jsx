@@ -3,8 +3,8 @@ import axios from 'axios';
 
 const UserDashboard = () => {
   const [bookedEvents, setBookedEvents] = useState([]);
-  const [token, setToken] = useState(""); // State to store the token
-  const [loading, setLoading] = useState(true); // State to track loading status
+  const [token, setToken] = useState("");
+  const [loading, setLoading] = useState(true); 
 
   useEffect(() => {
     // Fetch token from wherever it's stored (e.g., local storage)
@@ -13,6 +13,7 @@ const UserDashboard = () => {
       setToken(storedToken);
     }
   }, []);
+  console.log(bookedEvents)
 
   useEffect(() => {
     if (token) {
@@ -67,9 +68,12 @@ const UserDashboard = () => {
         <ul>
           {bookedEvents.map(booking => (
             <li key={booking._id} className="bg-white rounded-lg shadow-md p-4 mb-4">
-              <p className="text-xl font-semibold">{booking.title}</p>
-              <p className="text-gray-600">Date: {booking.date}</p>
-              <p className="text-gray-600">Location: {booking.location}</p>
+              <p className="text-xl font-semibold">{booking.eventId.title}</p>
+              <p className="text-gray-600">Date: {new Date(booking.eventId.date).toLocaleString()}</p>
+              <p className="text-gray-600">Location: {booking.eventId.location}</p>
+              <p className="text-gray-600">Ticket Availability: {booking.eventId.ticketAvailability}</p>
+              <img src={booking.eventId.imageUrl} alt={booking.eventId.title} className="max-w-xs h-auto mb-4" />
+              <p className="text-gray-600">Description: {booking.eventId.description}</p>
               <button 
                 className="bg-red-500 text-white py-2 px-4 mt-2 rounded-md hover:bg-red-600 transition-colors"
                 onClick={() => cancelBooking(booking._id)}
