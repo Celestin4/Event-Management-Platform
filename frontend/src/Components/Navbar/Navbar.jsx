@@ -109,10 +109,10 @@ function Navbar() {
           <Link to="/" className="text-gray-300 hover:text-white block px-3 py-2 rounded-md text-base font-medium">
             Upcoming events
           </Link>
-          <Link to="/recent-events" className="text-gray-300 hover:text-white block px-3 py-2 rounded-md text-base font-medium">
+          <Link to="/recent" className="text-gray-300 hover:text-white block px-3 py-2 rounded-md text-base font-medium">
             Recent Events
           </Link>
-          <Link to="/my-bookings" className="text-gray-300 hover:text-white block px-3 py-2 rounded-md text-base font-medium">
+          <Link to="/mybookings" className="text-gray-300 hover:text-white block px-3 py-2 rounded-md text-base font-medium">
             My Bookings
           </Link>
           <Link to="/dashboard" className="text-gray-300 hover:text-white block px-3 py-2 rounded-md text-base font-medium">

@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import axios from 'axios';
+const VITE_BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
+
 
 const EventDetails = () => {
   const { eventId } = useParams();
@@ -10,7 +12,7 @@ const EventDetails = () => {
 
   useEffect(() => {
     if (eventId) {
-      axios.get(`http://localhost:5000/events/${eventId}`)
+      axios.get(`${VITE_BACKEND_URL}/events/${eventId}`)
         .then(response => {
           setEvent(response.data);
         })
@@ -28,7 +30,7 @@ const EventDetails = () => {
 
     const token = localStorage.getItem('token');
   
-    fetch(`http://localhost:5000/booking/${eventId}`, {
+    fetch(`${VITE_BACKEND_URL}/booking/${eventId}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

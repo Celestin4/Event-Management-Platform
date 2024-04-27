@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 
+
 const AdminDashboard = () => {
   const [events, setEvents] = useState([]);
   const [isCreateModalOpen, setCreateModalOpen] = useState(false);
@@ -8,6 +9,7 @@ const AdminDashboard = () => {
   const [isCancelModalOpen, setCancelModalOpen] = useState(false);
   const [isDeleteModalOpen, setDeleteModalOpen] = useState(false);
   const [isViewAttendeeModalOpen, setViewAttendeeModalOpen] = useState(false);
+  const VITE_BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
 
   const [newEvent, setNewEvent] = useState({
     title: '',
@@ -21,7 +23,7 @@ const AdminDashboard = () => {
   const [attendees, setAttendees] = useState([]);
 
   useEffect(() => {
-    axios.get('http://localhost:5000/events/')
+    axios.get(`${VITE_BACKEND_URL}/events/`)
       .then(response => {
         setEvents(response.data);
       })
@@ -63,7 +65,7 @@ const AdminDashboard = () => {
       return;
     }
   
-    axios.get(`http://localhost:5000/auth/viewAttebdee/${eventId}`, {
+    axios.get(`${VITE_BACKEND_URL}/auth/viewAttebdee/${eventId}`, {
       headers: {
         Authorization: `Bearer ${token}`
       }
@@ -85,7 +87,7 @@ const AdminDashboard = () => {
       return;
     }
   
-    axios.post('http://localhost:5000/events/', newEvent, {
+    axios.post(`${VITE_BACKEND_URL}/events/`, newEvent, {
       headers: {
         Authorization: `Bearer ${token}` 
       }
@@ -117,7 +119,7 @@ const AdminDashboard = () => {
       return;
     }
 
-    axios.put(`http://localhost:5000/events/${newEvent._id}`, newEvent, {
+    axios.put(`${VITE_BACKEND_URL}/events/${newEvent._id}`, newEvent, {
       headers: {
         Authorization: `Bearer ${token}`
       }
@@ -150,7 +152,7 @@ const AdminDashboard = () => {
       return;
     }
 
-    axios.delete(`http://localhost:5000/events/${eventId}`, {
+    axios.delete(`${VITE_BACKEND_URL}/events/${eventId}`, {
       headers: {
         Authorization: `Bearer ${token}` // Include token in request headers
       }
@@ -176,7 +178,7 @@ const AdminDashboard = () => {
       return;
     }
   
-    axios.delete(`http://localhost:5000/events/${selectedEvent._id}`, {
+    axios.delete(`${VITE_BACKEND_URL}/events/${selectedEvent._id}`, {
       headers: {
         Authorization: `Bearer ${token}` // Include token in request headers
       }
@@ -193,10 +195,7 @@ const AdminDashboard = () => {
       });
   };
   
-  const handleCancelBooking = (attendeeId) => {
-    // Implement cancel booking functionality here
-  };
-
+ 
   return (
     <div className="container mx-auto p-4 relative">
       <h2 className="text-3xl font-semibold mb-4">Event Management</h2>
@@ -270,7 +269,7 @@ const AdminDashboard = () => {
                       </div>
                       <div>
                         <button
-                          onClick={() => handleCancelBooking(attendee._id)}
+              
                           className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
                         >
                           Cancel Booking

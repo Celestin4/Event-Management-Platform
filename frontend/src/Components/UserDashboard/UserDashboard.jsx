@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
+const VITE_BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
 
 const UserDashboard = () => {
   const [bookedEvents, setBookedEvents] = useState([]);
@@ -18,7 +19,7 @@ const UserDashboard = () => {
   useEffect(() => {
     if (token) {
       // Fetch booked events from backend API with token in headers
-      axios.get('http://localhost:5000/auth/booking', {
+      axios.get(`${VITE_BACKEND_URL}/auth/booking`, {
         headers: {
           Authorization: `Bearer ${token}`
         }
@@ -36,7 +37,7 @@ const UserDashboard = () => {
 
   const cancelBooking = (bookingId) => {
     // Send cancellation request to backend API with token in headers
-    axios.delete(`http://localhost:5000/booking/${bookingId}`, {
+    axios.delete(`${VITE_BACKEND_URL}/booking/${bookingId}`, {
       headers: {
         Authorization: `Bearer ${token}`
       }
