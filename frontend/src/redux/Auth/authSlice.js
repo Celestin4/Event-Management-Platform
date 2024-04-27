@@ -1,6 +1,16 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { login, register } from '../Auth/authService';
 
+// Check for token in local storage during app initialization
+const token = localStorage.getItem('token');
+const initialState = {
+  isAuthenticated: !!token, // Set isAuthenticated based on the presence of the token
+  user: null,
+  status: 'idle',
+  error: null
+};
+
+// Define async thunks for login and register actions
 export const loginAsync = createAsyncThunk(
   'auth/login',
   async ({ email, password }, thunkAPI) => {
@@ -26,18 +36,15 @@ export const registerAsync = createAsyncThunk(
   }
 );
 
+// Define the authentication slice
 const authSlice = createSlice({
   name: 'auth',
-  initialState: {
-    isAuthenticated: false,
-    user: null,
-    status: 'idle',
-    error: null
-  },
+  initialState,
   reducers: {
     logout: (state) => {
       state.isAuthenticated = false;
       state.user = null;
+      localStorage.removeItem('token'); // Remove token from local storage on logout
     }
   },
   extraReducers: (builder) => {
@@ -49,7 +56,7 @@ const authSlice = createSlice({
         state.status = 'succeeded';
         state.isAuthenticated = true;
         state.user = action.payload;
-        localStorage.setItem('token', action.payload.token); // Store token in local storage
+        localStorage.setItem('token', action.payload.token);
       })
       .addCase(loginAsync.rejected, (state, action) => {
         state.status = 'failed';
@@ -62,6 +69,7 @@ const authSlice = createSlice({
         state.status = 'succeeded';
         state.isAuthenticated = true;
         state.user = action.payload;
+        localStorage.setItem('token', action.payload.token);
       })
       .addCase(registerAsync.rejected, (state, action) => {
         state.status = 'failed';

@@ -1,9 +1,11 @@
 import { useState } from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { loginAsync } from '../../redux/Auth/authSlice';
 
 const SignInForm = () => {
   const dispatch = useDispatch();
+  const authError = useSelector(state => state.auth.error); // Assuming you have an error field in your auth state
+
   const [loginInfo, setLoginInfo] = useState({
     email: '',
     password: '',
@@ -20,9 +22,8 @@ const SignInForm = () => {
       email: loginInfo.email,
       password: loginInfo.password
     }));
-
   };
-console.log(loginInfo)
+
   return (
     <section className="bg-gray-50 dark:bg-gray-900">
       <div className="flex flex-col items-center justify-center px-6 py-8 mx-auto md:h-screen lg:py-0">
@@ -31,6 +32,7 @@ console.log(loginInfo)
             <h1 className="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl dark:text-white">
               Sign in to your account
             </h1>
+            {authError && <p className="text-red-500">{authError}</p>}
             <form className="space-y-4 md:space-y-6" onSubmit={handleSubmit}>
               <div>
                 <label htmlFor="email" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Your email</label>
