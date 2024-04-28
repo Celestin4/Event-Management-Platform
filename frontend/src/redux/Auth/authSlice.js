@@ -1,22 +1,39 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import { login, register } from '../Auth/authService';
+import { login as loginService, register as registerService } from '../Auth/authService';
 
-// Check for token in local storage during app initialization
+const decodeToken = (token) => {
+  try {
+    const base64Url = token.split('.')[1];
+    const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+    const jsonPayload = decodeURIComponent(
+      atob(base64)
+        .split('')
+        .map(function (c) {
+          return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+        })
+        .join('')
+    );
+    return JSON.parse(jsonPayload);
+  } catch (error) {
+    console.error('Error decoding token:', error);
+    return null;
+  }
+};
+
 const token = localStorage.getItem('token');
+
 const initialState = {
   isAuthenticated: !!token,
-  user: token,
+  user: token ? decodeToken(token) : null,
   status: 'idle',
   error: null
 };
 
-// Define async thunks for login and register actions
 export const loginAsync = createAsyncThunk(
   'auth/login',
   async ({ email, password }, thunkAPI) => {
-    console.log(email, password)
     try {
-      const response = await login(email, password);
+      const response = await loginService(email, password);
       return response;
     } catch (error) {
       return thunkAPI.rejectWithValue(error);
@@ -28,7 +45,7 @@ export const registerAsync = createAsyncThunk(
   'auth/register',
   async ({ fullName, email, password }, thunkAPI) => {
     try {
-      const response = await register(fullName, email, password);
+      const response = await registerService(fullName, email, password);
       return response;
     } catch (error) {
       return thunkAPI.rejectWithValue(error);
@@ -36,7 +53,6 @@ export const registerAsync = createAsyncThunk(
   }
 );
 
-// Define the authentication slice
 const authSlice = createSlice({
   name: 'auth',
   initialState,
@@ -44,7 +60,7 @@ const authSlice = createSlice({
     logout: (state) => {
       state.isAuthenticated = false;
       state.user = null;
-      localStorage.removeItem('token'); // Remove token from local storage on logout
+      localStorage.removeItem('token');
     }
   },
   extraReducers: (builder) => {
@@ -55,7 +71,7 @@ const authSlice = createSlice({
       .addCase(loginAsync.fulfilled, (state, action) => {
         state.status = 'succeeded';
         state.isAuthenticated = true;
-        state.user = action.payload;
+        state.user = decodeToken(action.payload.token);
         localStorage.setItem('token', action.payload.token);
       })
       .addCase(loginAsync.rejected, (state, action) => {
@@ -68,7 +84,7 @@ const authSlice = createSlice({
       .addCase(registerAsync.fulfilled, (state, action) => {
         state.status = 'succeeded';
         state.isAuthenticated = true;
-        state.user = action.payload;
+        state.user = decodeToken(action.payload.token);
         localStorage.setItem('token', action.payload.token);
       })
       .addCase(registerAsync.rejected, (state, action) => {
