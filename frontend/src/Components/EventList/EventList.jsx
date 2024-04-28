@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Base_URL } from '../../constants/constants';
+const VITE_BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
 import { Link } from 'react-router-dom';
 
 const EventList = () => {
@@ -11,7 +11,7 @@ const EventList = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get(`${Base_URL}/events/upcoming`);
+        const response = await axios.get(`${VITE_BACKEND_URL}/events/upcoming`);
         setEvents([...response.data]);
         setLoading(false);
       } catch (error) {

@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Base_URL } from '../../constants/constants';
+const VITE_BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
 import { Link } from 'react-router-dom'; // Import Link from react-router-dom
 
 const MostRecentEventList = () => {
@@ -11,7 +11,7 @@ const MostRecentEventList = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get(`${Base_URL}/events/mostRecentEvents`);
+        const response = await axios.get(`${VITE_BACKEND_URL}/events/mostRecentEvents`);
         setEvents([...response.data]);
         setLoading(false);
       } catch (error) {
