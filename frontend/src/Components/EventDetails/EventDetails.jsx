@@ -1,7 +1,10 @@
 import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import axios from 'axios';
+import Navbar from '../Navbar/Navbar';
+import Footer from '../Footer/Footer';
 const VITE_BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
+
 
 
 const EventDetails = () => {
@@ -50,10 +53,13 @@ const EventDetails = () => {
   };
   
   if (!event) {
-    return <div>Loading...</div>;
+    return <div className='bg-gray-100 min-h-screen flex items-center justify-center'>Loading...</div>;
   }
 
   return (
+    <>
+    
+    < Navbar />
     <div className="max-w-md mx-auto bg-white rounded-xl shadow-md overflow-hidden md:max-w-2xl">
       <div className="p-8">
         <h2 className="text-2xl font-bold mb-4">{event.title}</h2>
@@ -98,6 +104,10 @@ const EventDetails = () => {
         )}
       </div>
     </div>
+
+    <Footer />
+
+    </>
   );
 };
 

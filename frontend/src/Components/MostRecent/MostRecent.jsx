@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react';
 import axios from 'axios';
 const VITE_BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
 import { Link } from 'react-router-dom'; // Import Link from react-router-dom
+import Navbar from '../Navbar/Navbar';
+import Footer from '../Footer/Footer';
 
 const MostRecentEventList = () => {
   const [events, setEvents] = useState([]);
@@ -26,6 +28,8 @@ const MostRecentEventList = () => {
   }, []);
 
   return (
+<>
+    < Navbar />
     <div>
       <h2 className="text-2xl font-bold m-4"> There are events happening in 7 days</h2>
       {loading && <p>Loading...</p>}
@@ -54,6 +58,10 @@ const MostRecentEventList = () => {
         </>
       )}
     </div>
+
+    < Footer />
+
+    </>
   );
 };
 

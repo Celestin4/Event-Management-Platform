@@ -1,8 +1,10 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
-const VITE_BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
 import { Link } from 'react-router-dom';
+import Navbar from '../Navbar/Navbar';
+import Footer from '../Footer/Footer';
 
+const VITE_BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
 const EventList = () => {
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -26,9 +28,13 @@ const EventList = () => {
   }, []);
 
   return (
+    <>
+
+    <Navbar />
+    
     <div>
       <h2 className="text-2xl font-bold m-4">Upcoming Events</h2>
-      {loading && <p>Loading...</p>}
+      {loading && <p className='bg-gray-100 min-h-screen flex items-center justify-center'>Loading...</p>}
       {error && <p>Error: {error}</p>}
       {!loading && !error && events.length === 0 && (
         <div className="bg-gray-100 min-h-screen flex items-center justify-center">We are not having events</div>
@@ -50,6 +56,8 @@ const EventList = () => {
         </div>
       )}
     </div>
+    <Footer />
+      </>
   );
 };
 

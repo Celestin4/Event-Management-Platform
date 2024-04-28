@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
+import Navbar from '../Navbar/Navbar';
+import Footer from '../Footer/Footer';
 
 
 const AdminDashboard = () => {
@@ -39,18 +41,19 @@ const AdminDashboard = () => {
   const handlesetUpdateModalOpen = (eventId) => {
     const selectedEventData = events.find(event => event._id === eventId);
     if (selectedEventData) {
-      setNewEvent(selectedEventData); // Populate newEvent state with selected event data
+      setNewEvent(selectedEventData);
       setUpdateModalOpen(true);
     }
   };
 
-  const handleSetDeleteModalOpen = () => {
+  const handleSetDeleteModalOpen = (eventId) => {
+    setSelectedEvent(events.find(event => event._id === eventId)); 
     setDeleteModalOpen(true)
   }
 
   const handleSetViewAttendeeModalOpen = (eventId) => {
-    setSelectedEvent(events.find(event => event._id === eventId)); // Set the selected event
-    handleViewAttendees(eventId); // Fetch attendees for the selected event
+    setSelectedEvent(events.find(event => event._id === eventId)); 
+    handleViewAttendees(eventId); 
   };
 
   const handleCancelEvent = (eventId) => {
@@ -94,10 +97,10 @@ const AdminDashboard = () => {
     })
     .then(response => {
       console.log('Event created successfully:', response.data);
-      // Add the newly created event to the events state
+      
       setEvents(prevEvents => [...prevEvents, response.data]);
-      setCreateModalOpen(false); // Close the Create Event modal
-      // Clear the newEvent state for next creation
+      setCreateModalOpen(false);
+  
       setNewEvent({
         title: '',
         date: '',
@@ -108,7 +111,6 @@ const AdminDashboard = () => {
     })
     .catch(error => {
       console.error('Error creating event:', error);
-      // Handle error (e.g., display error message)
     });
   };
 
@@ -131,7 +133,7 @@ const AdminDashboard = () => {
       );
       setEvents(updatedEvents);
       setUpdateModalOpen(false);
-      setNewEvent({ // Reset newEvent state
+      setNewEvent({ 
         title: '',
         date: '',
         location: '',
@@ -148,24 +150,24 @@ const AdminDashboard = () => {
     const token = localStorage.getItem('token');
     if (!token) {
       console.error('Token not found in local storage');
-      // Handle token not found (e.g., redirect to login)
+    
       return;
     }
 
-    axios.delete(`${VITE_BACKEND_URL}/events/${eventId}`, {
+    axios.delete(`${VITE_BACKEND_URL}/events/${selectedEvent._id}`, {
       headers: {
-        Authorization: `Bearer ${token}` // Include token in request headers
+        Authorization: `Bearer ${token}` 
       }
     })
     .then(response => {
       console.log('Event deleted successfully:', response.data);
-      // Update events state to remove the deleted event
+     
       setEvents(prevEvents => prevEvents.filter(event => event._id !== eventId));
       setDeleteModalOpen(false);
     })
     .catch(error => {
       console.error('Error deleting event:', error);
-      // Handle error (e.g., display error message)
+   
     });
   };
 
@@ -174,29 +176,31 @@ const AdminDashboard = () => {
     const token = localStorage.getItem('token');
     if (!token) {
       console.error('Token not found in local storage');
-      // Handle token not found (e.g., redirect to login)
+    
       return;
     }
   
     axios.delete(`${VITE_BACKEND_URL}/events/${selectedEvent._id}`, {
       headers: {
-        Authorization: `Bearer ${token}` // Include token in request headers
+        Authorization: `Bearer ${token}` 
       }
     })
       .then(response => {
         console.log('Event canceled successfully:', response.data);
-        // Update events state to remove the canceled event
+
         setEvents(prevEvents => prevEvents.filter(event => event._id !== selectedEvent._id));
         setCancelModalOpen(false);
       })
       .catch(error => {
         console.error('Error canceling event:', error);
-        // Handle error (e.g., display error message)
+
       });
   };
   
  
   return (
+    <>
+    <Navbar />
     <div className="container mx-auto p-4 relative">
       <h2 className="text-3xl font-semibold mb-4">Event Management</h2>
       <button
@@ -560,7 +564,7 @@ const AdminDashboard = () => {
               </div>
               <div className="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
                 <button
-                  onClick={() => handleDeleteEvent(selectedEvent._id)} // Pass eventId to handleDeleteEvent
+                  onClick={() => handleDeleteEvent()}
                   type="button"
                   className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-green-600 text-base font-medium text-white hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 sm:ml-3 sm:w-auto sm:text-sm"
                 >
@@ -582,6 +586,9 @@ const AdminDashboard = () => {
 
       
     </div>
+    <Footer />
+
+    </>
   );
 };
 
