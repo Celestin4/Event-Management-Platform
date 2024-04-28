@@ -14,7 +14,7 @@ This project is an Event Management Platform developed using the MERN (MongoDB, 
 ## Testing credentials for a hosted version:
 
 ***Admin: ***  
-"email": "admin19@example.com",
+"email": "admin@example.com",
   "password": "Test1234",
 
 ***Normal user***
