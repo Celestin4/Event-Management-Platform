@@ -4,6 +4,8 @@
 
 Link: `https://eventpulse.netlify.app/` 
 
+## Note: Hosted version is bit slow because it hosted on free servers.
+
 You can also follow the step mentioned in Project Setup section below
 
 
